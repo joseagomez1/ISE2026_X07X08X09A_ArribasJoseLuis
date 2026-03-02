@@ -11,7 +11,6 @@
 #include <string.h>
 #include "cmsis_os2.h"                  // ::CMSIS:RTOS2
 #include "rl_net.h"                     // Keil.MDK-Pro::Network:CORE
-
 #include "Board_LED.h"                  // ::Board Support:LED
 
 #if      defined (__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
@@ -21,8 +20,8 @@
 
 
 // http_server.c
-extern uint16_t AD_in (uint32_t ch);
-extern uint8_t  get_button (void);
+extern uint16_t AD_in (uint32_t ch1);
+//extern uint8_t  get_button (void);
 
 extern bool LEDrun;
 extern char lcd_text[2][20+1];
@@ -371,8 +370,8 @@ uint32_t netCGI_Script (const char *env, char *buf, uint32_t buflen, uint32_t *p
 
     case 'y':
       // Button state from 'button.cgx'
-      len = (uint32_t)sprintf (buf, "<checkbox><id>button%c</id><on>%s</on></checkbox>",
-                               env[1], (get_button () & (1 << (env[1]-'0'))) ? "true" : "false");
+   //   len = (uint32_t)sprintf (buf, "<checkbox><id>button%c</id><on>%s</on></checkbox>",
+     //                          env[1], (get_button () & (1 << (env[1]-'0'))) ? "true" : "false");
       break;
   }
   return (len);
