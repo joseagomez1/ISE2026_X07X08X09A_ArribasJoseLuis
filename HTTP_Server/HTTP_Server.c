@@ -17,7 +17,7 @@
 #include "Board_Buttons.h"              // ::Board Support:Buttons
 #include "Board_ADC.h"                  // ::Board Support:A/D Converter
 #include "Board_GLCD.h"                 // ::Board Support:Graphic LCD
-#include "GLCD_Config.h"                // Keil.MCBSTM32F400::Board Support:Graphic LCD
+//#include "GLCD_Config.h"                // Keil.MCBSTM32F400::Board Support:Graphic LCD
 
 // Main stack size must be multiple of 8 Bytes
 #define APP_MAIN_STK_SZ (1024U)
@@ -27,8 +27,8 @@ const osThreadAttr_t app_main_attr = {
   .stack_size = sizeof(app_main_stk)
 };
 
-extern GLCD_FONT GLCD_Font_6x8;
-extern GLCD_FONT GLCD_Font_16x24;
+//extern GLCD_FONT GLCD_Font_6x8;
+//extern GLCD_FONT GLCD_Font_16x24;
 
 extern uint16_t AD_in          (uint32_t ch);
 extern uint8_t  get_button     (void);
@@ -59,9 +59,9 @@ uint16_t AD_in (uint32_t ch) {
   int32_t val = 0;
 
   if (ch == 0) {
-    ADC_StartConversion();
-    while (ADC_ConversionDone () < 0);
-    val = ADC_GetValue();
+//    ADC_StartConversion();
+//    while (ADC_ConversionDone () < 0);
+//    val = ADC_GetValue();
   }
   return ((uint16_t)val);
 }
@@ -80,7 +80,7 @@ void netDHCP_Notify (uint32_t if_num, uint8_t option, const uint8_t *val, uint32
 
   if (option == NET_DHCP_OPTION_IP_ADDRESS) {
     /* IP address change, trigger LCD update */
-    osThreadFlagsSet (TID_Display, 0x01);
+   osThreadFlagsSet (TID_Display, 0x01);
   }
 }
 
@@ -95,15 +95,15 @@ static __NO_RETURN void Display (void *arg) {
 
   (void)arg;
 
-  GLCD_Initialize         ();
-  GLCD_SetBackgroundColor (GLCD_COLOR_BLUE);
-  GLCD_SetForegroundColor (GLCD_COLOR_WHITE);
-  GLCD_ClearScreen        ();
-  GLCD_SetFont            (&GLCD_Font_16x24);
-  GLCD_DrawString         (x*16U, 1U*24U, "       MDK-MW       ");
-  GLCD_DrawString         (x*16U, 2U*24U, "HTTP Server example ");
+//  GLCD_Initialize         ();
+//  GLCD_SetBackgroundColor (GLCD_COLOR_BLUE);
+//  GLCD_SetForegroundColor (GLCD_COLOR_WHITE);
+//  GLCD_ClearScreen        ();
+//  GLCD_SetFont            (&GLCD_Font_16x24);
+//  GLCD_DrawString         (x*16U, 1U*24U, "       MDK-MW       ");
+//  GLCD_DrawString         (x*16U, 2U*24U, "HTTP Server example ");
 
-  GLCD_DrawString (x*16U, 4U*24U, "IP4:Waiting for DHCP");
+//  GLCD_DrawString (x*16U, 4U*24U, "IP4:Waiting for DHCP");
 
   /* Print Link-local IPv6 address */
   netIF_GetOption (NET_IF_CLASS_ETH,
@@ -111,10 +111,10 @@ static __NO_RETURN void Display (void *arg) {
 
   netIP_ntoa(NET_ADDR_IP6, ip_addr, ip_ascii, sizeof(ip_ascii));
 
-  sprintf (buf, "IP6:%.16s", ip_ascii);
-  GLCD_DrawString ( x    *16U, 5U*24U, buf);
-  sprintf (buf, "%s", ip_ascii+16);
-  GLCD_DrawString ((x+10U)*16U, 6U*24U, buf);
+//  sprintf (buf, "IP6:%.16s", ip_ascii);
+//  GLCD_DrawString ( x    *16U, 5U*24U, buf);
+//  sprintf (buf, "%s", ip_ascii+16);
+//  GLCD_DrawString ((x+10U)*16U, 6U*24U, buf);
 
   while(1) {
     /* Wait for signal from DHCP */
@@ -126,14 +126,14 @@ static __NO_RETURN void Display (void *arg) {
 
     netIP_ntoa (NET_ADDR_IP4, ip_addr, ip_ascii, sizeof(ip_ascii));
 
-    sprintf (buf, "IP4:%-16s",ip_ascii);
-    GLCD_DrawString (x*16U, 4U*24U, buf);
+//    sprintf (buf, "IP4:%-16s",ip_ascii);
+//    GLCD_DrawString (x*16U, 4U*24U, buf);
 
     /* Display user text lines */
-    sprintf (buf, "%-20s", lcd_text[0]);
-    GLCD_DrawString (x*16U, 7U*24U, buf);
-    sprintf (buf, "%-20s", lcd_text[1]);
-    GLCD_DrawString (x*16U, 8U*24U, buf);
+//    sprintf (buf, "%-20s", lcd_text[0]);
+//    GLCD_DrawString (x*16U, 7U*24U, buf);
+//    sprintf (buf, "%-20s", lcd_text[1]);
+//    GLCD_DrawString (x*16U, 8U*24U, buf);
   }
 }
 
@@ -141,23 +141,23 @@ static __NO_RETURN void Display (void *arg) {
   Thread 'BlinkLed': Blink the LEDs on an eval board
  *---------------------------------------------------------------------------*/
 static __NO_RETURN void BlinkLed (void *arg) {
-  const uint8_t led_val[16] = { 0x48,0x88,0x84,0x44,0x42,0x22,0x21,0x11,
-                                0x12,0x0A,0x0C,0x14,0x18,0x28,0x30,0x50 };
-  uint32_t cnt = 0U;
+//  const uint8_t led_val[16] = { 0x48,0x88,0x84,0x44,0x42,0x22,0x21,0x11,
+//                                0x12,0x0A,0x0C,0x14,0x18,0x28,0x30,0x50 };
+//  uint32_t cnt = 0U;
 
-  (void)arg;
+//  (void)arg;
 
-  LEDrun = true;
-  while(1) {
-    /* Every 100 ms */
-    if (LEDrun == true) {
-      LED_SetOut (led_val[cnt]);
-      if (++cnt >= sizeof(led_val)) {
-        cnt = 0U;
-      }
-    }
-    osDelay (100);
-  }
+//  LEDrun = true;
+//  while(1) {
+//    /* Every 100 ms */
+//    if (LEDrun == true) {
+//      LED_SetOut (led_val[cnt]);
+//      if (++cnt >= sizeof(led_val)) {
+//        cnt = 0U;
+//      }
+//    }
+//    osDelay (100);
+//  }
 }
 
 /*----------------------------------------------------------------------------
@@ -168,7 +168,7 @@ __NO_RETURN void app_main (void *arg) {
 
   LED_Initialize();
   Buttons_Initialize();
-  ADC_Initialize();
+//  ADC_Initialize();
 
   netInitialize ();
 
