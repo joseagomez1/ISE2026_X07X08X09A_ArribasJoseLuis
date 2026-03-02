@@ -15,10 +15,9 @@ http_server/Objects/
 http_server/Listing/
 http_server/DebugConfig/
 http_server/RTE/
-http_server/Web/
 
 # --- Archivos específicos de Keil ---
-*.uvguix
+*.uvguix*
 *.bak
 *.tmp
 *.uvoptx
