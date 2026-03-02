@@ -1,0 +1,33 @@
+# ----------------------------
+# Archivos de compilación y debug
+# ----------------------------
+*.axf
+*.hex
+*.bin
+*.o
+*.d
+*.map
+*.ilk
+*.log
+
+# ----------------------------
+# Carpetas de salida / debug
+# ----------------------------
+/Debug/
+/Output/
+/Objects/
+/Listing/
+
+# ----------------------------
+# Archivos de Keil específicos que no son críticos
+# ----------------------------
+*.uvguix
+*.bak
+*.tmp
+*.uvoptx
+
+# ----------------------------
+# Runtime Environment temporal / intermedio
+# ----------------------------
+/RTE/Device/
+/RTE/Components/Startup/
