@@ -629,14 +629,14 @@
           <targetInfo name="Debug"/>
         </targetInfos>
       </component>
-      <component Capiversion="1.0.0" Cbundle="STM32F429I-Discovery" Cclass="Board Support" Cgroup="Buttons" Cvendor="Keil" Cversion="1.0.0" condition="STM32F4 HAL GPIO">
-        <package name="STM32F4xx_DFP" schemaVersion="1.6.3" url="http://www.keil.com/pack/" vendor="Keil" version="2.15.0"/>
+      <component Capiversion="1.0.0" Cbundle="NUCLEO-F429ZI" Cclass="Board Support" Cgroup="Buttons" Cvendor="Keil" Cversion="1.0.0" condition="F429ZI CMSIS HAL GPIO">
+        <package name="STM32NUCLEO_BSP" schemaVersion="1.7.2" url="http://www.keil.com/pack/" vendor="Keil" version="1.8.0"/>
         <targetInfos>
           <targetInfo name="Debug"/>
         </targetInfos>
       </component>
-      <component Capiversion="1.0.0" Cbundle="STM32F429I-Discovery" Cclass="Board Support" Cgroup="LED" Cvendor="Keil" Cversion="1.0.0" condition="STM32F4 HAL GPIO">
-        <package name="STM32F4xx_DFP" schemaVersion="1.6.3" url="http://www.keil.com/pack/" vendor="Keil" version="2.15.0"/>
+      <component Capiversion="1.0.0" Cbundle="NUCLEO-F429ZI" Cclass="Board Support" Cgroup="LED" Cvendor="Keil" Cversion="1.0.0" condition="F429ZI CMSIS HAL GPIO">
+        <package name="STM32NUCLEO_BSP" schemaVersion="1.7.2" url="http://www.keil.com/pack/" vendor="Keil" version="1.8.0"/>
         <targetInfos>
           <targetInfo name="Debug"/>
         </targetInfos>

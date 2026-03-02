@@ -141,23 +141,23 @@ static __NO_RETURN void Display (void *arg) {
   Thread 'BlinkLed': Blink the LEDs on an eval board
  *---------------------------------------------------------------------------*/
 static __NO_RETURN void BlinkLed (void *arg) {
-//  const uint8_t led_val[16] = { 0x48,0x88,0x84,0x44,0x42,0x22,0x21,0x11,
-//                                0x12,0x0A,0x0C,0x14,0x18,0x28,0x30,0x50 };
-//  uint32_t cnt = 0U;
+  const uint8_t led_val[16] = { 0x48,0x88,0x84,0x44,0x42,0x22,0x21,0x11,
+                                0x12,0x0A,0x0C,0x14,0x18,0x28,0x30,0x50 };
+  uint32_t cnt = 0U;
 
-//  (void)arg;
+  (void)arg;
 
-//  LEDrun = true;
-//  while(1) {
-//    /* Every 100 ms */
-//    if (LEDrun == true) {
-//      LED_SetOut (led_val[cnt]);
-//      if (++cnt >= sizeof(led_val)) {
-//        cnt = 0U;
-//      }
-//    }
-//    osDelay (100);
-//  }
+  LEDrun = true;
+  while(1) {
+    /* Every 100 ms */
+    if (LEDrun == true) {
+      LED_SetOut (led_val[cnt]);
+      if (++cnt >= sizeof(led_val)) {
+        cnt = 0U;
+      }
+    }
+    osDelay (100);
+  }
 }
 
 /*----------------------------------------------------------------------------
