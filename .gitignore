@@ -1,0 +1,24 @@
+# --- Archivos de compilación ---
+*.axf
+*.hex
+*.bin
+*.o
+*.d
+*.map
+*.ilk
+*.log
+
+# --- Carpetas dentro de http_server ---
+http_server/Debug/
+http_server/Output/
+http_server/Objects/
+http_server/Listing/
+http_server/DebugConfig/
+http_server/RTE/
+http_server/Web/
+
+# --- Archivos específicos de Keil ---
+*.uvguix
+*.bak
+*.tmp
+*.uvoptx
