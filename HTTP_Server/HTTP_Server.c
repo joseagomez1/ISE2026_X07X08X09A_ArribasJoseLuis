@@ -7,6 +7,7 @@
  *----------------------------------------------------------------------------*/
 
 #include <stdio.h>
+#include "lcd.h"
 
 #include "main.h"
 
@@ -16,7 +17,7 @@
 #include "Board_LED.h"                  // ::Board Support:LED
 #include "Board_Buttons.h"              // ::Board Support:Buttons
 #include "Board_ADC.h"                  // ::Board Support:A/D Converter
-#include "Board_GLCD.h"                 // ::Board Support:Graphic LCD
+//#include "Board_GLCD.h"                 // ::Board Support:Graphic LCD
 //#include "GLCD_Config.h"                // Keil.MCBSTM32F400::Board Support:Graphic LCD
 
 // Main stack size must be multiple of 8 Bytes
@@ -88,12 +89,12 @@ void netDHCP_Notify (uint32_t if_num, uint8_t option, const uint8_t *val, uint32
   Thread 'Display': LCD display handler
  *---------------------------------------------------------------------------*/
 static __NO_RETURN void Display (void *arg) {
-  static uint8_t ip_addr[NET_ADDR_IP6_LEN];
-  static char    ip_ascii[40];
-  static char    buf[24];
-  uint32_t x = 0;
+//  static uint8_t ip_addr[NET_ADDR_IP6_LEN];
+//  static char    ip_ascii[40];
+//  static char    buf[24];
+//  uint32_t x = 0;
 
-  (void)arg;
+//  (void)arg;
 
 //  GLCD_Initialize         ();
 //  GLCD_SetBackgroundColor (GLCD_COLOR_BLUE);
@@ -106,27 +107,32 @@ static __NO_RETURN void Display (void *arg) {
 //  GLCD_DrawString (x*16U, 4U*24U, "IP4:Waiting for DHCP");
 
   /* Print Link-local IPv6 address */
-  netIF_GetOption (NET_IF_CLASS_ETH,
-                   netIF_OptionIP6_LinkLocalAddress, ip_addr, sizeof(ip_addr));
+//  netIF_GetOption (NET_IF_CLASS_ETH,
+//                   netIF_OptionIP6_LinkLocalAddress, ip_addr, sizeof(ip_addr));
 
-  netIP_ntoa(NET_ADDR_IP6, ip_addr, ip_ascii, sizeof(ip_ascii));
+//  netIP_ntoa(NET_ADDR_IP6, ip_addr, ip_ascii, sizeof(ip_ascii));
 
 //  sprintf (buf, "IP6:%.16s", ip_ascii);
 //  GLCD_DrawString ( x    *16U, 5U*24U, buf);
 //  sprintf (buf, "%s", ip_ascii+16);
 //  GLCD_DrawString ((x+10U)*16U, 6U*24U, buf);
-
+  LCD_reset();
+	LCD_init();
+	clean_buffer();
+	
   while(1) {
     /* Wait for signal from DHCP */
-    osThreadFlagsWait (0x01U, osFlagsWaitAny, osWaitForever);
-
+    osThreadFlagsWait (0x01U, osFlagsWaitAny,osWaitForever );
+	  write_LCD(lcd_text[0],1,true);
+    write_LCD(lcd_text[1],2,false);
+		
     /* Retrieve and print IPv4 address */
-    netIF_GetOption (NET_IF_CLASS_ETH,
-                     netIF_OptionIP4_Address, ip_addr, sizeof(ip_addr));
+//    netIF_GetOption (NET_IF_CLASS_ETH,
+//                     netIF_OptionIP4_Address, ip_addr, sizeof(ip_addr));
 
-    netIP_ntoa (NET_ADDR_IP4, ip_addr, ip_ascii, sizeof(ip_ascii));
+//    netIP_ntoa (NET_ADDR_IP4, ip_addr, ip_ascii, sizeof(ip_ascii));
 
-//    sprintf (buf, "IP4:%-16s",ip_ascii);
+////    sprintf (buf, "IP4:%-16s",ip_ascii);
 //    GLCD_DrawString (x*16U, 4U*24U, buf);
 
     /* Display user text lines */
