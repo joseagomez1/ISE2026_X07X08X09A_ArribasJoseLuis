@@ -165,6 +165,7 @@ static __NO_RETURN void ActualizacionHora (void *arg) {
     //Envía al hilo del LCD para escribir
     osThreadFlagsSet (TID_Display, 0x50); 
 	
+		osDelay(250);//para no estar representando infinitamente, el lcd se ve mal sino
 		
   }
 }
@@ -228,7 +229,7 @@ static __NO_RETURN void Pulsador (void *arg) {
 		  RTC_hora(0,0,0);
 			RTC_fecha(1,1,0,0);
 			for(int i = 0; i < 10; i++){
-        HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_7);
+        HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_7);//Led azul, no lo piden
         osDelay(100);
       }
 		}
