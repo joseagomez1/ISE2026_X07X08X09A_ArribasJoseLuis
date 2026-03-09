@@ -65,7 +65,7 @@
 /* Private functions ---------------------------------------------------------*/
 
 extern osThreadId_t TID_Alarma;
-
+extern osThreadId_t TID_Pulsador;
 /******************************************************************************/
 /*            Cortex-M4 Processor Exceptions Handlers                         */
 /******************************************************************************/
@@ -76,8 +76,21 @@ void RTC_Alarm_IRQHandler (void){
 
 void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc){
   
-
   osThreadFlagsSet(TID_Alarma, 0x01U);
+}
+
+
+
+//Interrupcion del pulsador con el envio del flag 
+void EXTI15_10_IRQHandler(void){ 
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_13); 
+  
+}
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_PIN){
+  if(GPIO_PIN == GPIO_PIN_13){ //Pin del pulsador
+    osThreadFlagsSet(TID_Pulsador, 0x01U);
+  }
 }
 
 

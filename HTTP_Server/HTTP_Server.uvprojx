@@ -586,6 +586,21 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>SNTP</GroupName>
+          <Files>
+            <File>
+              <FileName>sntp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\sntp.c</FilePath>
+            </File>
+            <File>
+              <FileName>sntp.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\sntp.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>::Board Support</GroupName>
         </Group>
         <Group>
@@ -682,6 +697,12 @@
         </targetInfos>
       </component>
       <component Cbundle="MDK-Pro" Cclass="Network" Cgroup="Interface" Csub="ETH" Cvendor="Keil" Cversion="7.17.0" condition="Network Driver ETH" maxInstances="2">
+        <package name="MDK-Middleware" schemaVersion="1.7.7" url="https://www.keil.com/pack/" vendor="Keil" version="7.15.0"/>
+        <targetInfos>
+          <targetInfo name="Debug"/>
+        </targetInfos>
+      </component>
+      <component Cbundle="MDK-Pro" Cclass="Network" Cgroup="Service" Csub="SNTP Client" Cvendor="Keil" Cversion="7.17.0" condition="Network UDP">
         <package name="MDK-Middleware" schemaVersion="1.7.7" url="https://www.keil.com/pack/" vendor="Keil" version="7.15.0"/>
         <targetInfos>
           <targetInfo name="Debug"/>
@@ -926,6 +947,14 @@
       <file attr="config" category="header" name="Network\Config\Net_Config_HTTP_Server.h" version="7.1.0">
         <instance index="0">RTE\Network\Net_Config_HTTP_Server.h</instance>
         <component Cbundle="MDK-Pro" Cclass="Network" Cgroup="Service" Csub="Web Server Compact" Cvariant="HTTP" Cvendor="Keil" Cversion="7.17.0" condition="Network Web Server Compact" isDefaultVariant="1"/>
+        <package name="MDK-Middleware" schemaVersion="1.7.7" url="https://www.keil.com/pack/" vendor="Keil" version="7.15.0"/>
+        <targetInfos>
+          <targetInfo name="Debug"/>
+        </targetInfos>
+      </file>
+      <file attr="config" category="header" name="Network\Config\Net_Config_SNTP_Client.h" version="7.0.0">
+        <instance index="0">RTE\Network\Net_Config_SNTP_Client.h</instance>
+        <component Cbundle="MDK-Pro" Cclass="Network" Cgroup="Service" Csub="SNTP Client" Cvendor="Keil" Cversion="7.17.0" condition="Network UDP"/>
         <package name="MDK-Middleware" schemaVersion="1.7.7" url="https://www.keil.com/pack/" vendor="Keil" version="7.15.0"/>
         <targetInfos>
           <targetInfo name="Debug"/>

@@ -17,11 +17,12 @@
 #include "Board_LED.h"                  // ::Board Support:LED
 #include "adc.h"                  // ::Board Support:A/D Converter
 #include "RTC.h"
+#include "sntp.h"
 #include "stm32f4xx_it.h"
 
 
 
-//#include "Board_Buttons.h"              // ::Board Support:Buttons
+#include "Board_Buttons.h"              // ::Board Support:Buttons
 
 //#include "Board_ADC.h"                  // ::Board Support:A/D Converter
 //#include "Board_GLCD.h"                 // ::Board Support:Graphic LCD
@@ -53,21 +54,37 @@ bool LEDrun;
 char lcd_text[2][20+1] = { "LCD line 1",
                            "LCD line 2" };
 
-uint8_t cincoSeg = 0;		
+
 uint8_t aShowTime[16] = {0};
-uint8_t aShowDate[16] = {0}; 		
+uint8_t aShowDate[16] = {0}; 
 
 /* Thread IDs */
 osThreadId_t TID_Display;
 osThreadId_t TID_Led;
 osThreadId_t TID_RTC;
 osThreadId_t TID_Alarma;
-													 
+osThreadId_t TID_Pulsador;
+										
+
+//TIMER
+osTimerId_t id_tim_1s;
+osTimerId_t id_tim_6s;
+osTimerId_t id_tim_3m;
+uint16_t timer_1seg=0;
+
 /* Thread declarations */
 static void BlinkLed (void *arg);
 static void Display  (void *arg);
 static void ActualizacionHora (void *arg);
 static void AlarmaMinuto (void *arg);
+static void Pulsador(void *arg);
+
+
+//CALLBACKS TIMERS
+static void SetTimers (void);
+void Timer_Callback_1s (void);
+void Timer_Callback_6s (void);
+void Timer_Callback_3m (void);
 
 
 __NO_RETURN void app_main (void *arg);
@@ -162,8 +179,8 @@ static __NO_RETURN void AlarmaMinuto (void *arg) {
 		FlagAlarma= osThreadFlagsWait(0x01U, osFlagsWaitAll,osWaitForever);
 		
 		if(FlagAlarma== 0x01){
-//			RTC_hora(0x00,0x00,0x00);
-//			RTC_fecha(0x01,0x01,0x00,0x01);
+			RTC_hora(0x00,0x00,0x00);
+			RTC_fecha(0x01,0x01,0x01,0x00);
 			for(int CincoSegundos=0; CincoSegundos<10; CincoSegundos++){
 			    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
           osDelay(500);
@@ -197,6 +214,28 @@ static __NO_RETURN void BlinkLed (void *arg) {
 }
 
 /*----------------------------------------------------------------------------
+  Thread 'pulsador': Funcionalidad de pulsador incluida
+ *---------------------------------------------------------------------------*/
+static __NO_RETURN void Pulsador (void *arg) {
+	
+	(void)arg;
+	uint8_t flagPulsador= 0x0U;
+	
+  while(1) {
+		flagPulsador= osThreadFlagsWait(0x01U, osFlagsWaitAll,osWaitForever);
+		
+		if(flagPulsador==0x01){
+		  RTC_hora(0,0,0);
+			RTC_fecha(1,1,0,0);
+			for(int i = 0; i < 10; i++){
+        HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_7);
+        osDelay(100);
+      }
+		}
+  }
+}
+
+/*----------------------------------------------------------------------------
   Main Thread 'main': Run Network
  *---------------------------------------------------------------------------*/
 __NO_RETURN void app_main (void *arg) {
@@ -212,11 +251,60 @@ __NO_RETURN void app_main (void *arg) {
 	//inicializacion RTC
   RTC_Init();
 	
-	Alarma();
+	//Alarma(); ACTIVAR PARA ALARMA DE LED
+	
+	//Lanzar timers
+	  SetTimers();
+	osTimerStart(id_tim_6s, 6000);
+	//boton
+	init_Boton();
 
   //TID_Led     = osThreadNew (BlinkLed, NULL, NULL);
   TID_Display = osThreadNew (Display,  NULL, NULL);
 	TID_RTC			= osThreadNew (ActualizacionHora,  NULL, NULL);
   TID_Alarma	 = osThreadNew (AlarmaMinuto,  NULL, NULL);
+	TID_Pulsador = osThreadNew (Pulsador,  NULL, NULL);
 	osThreadExit();
+}
+
+
+//MANEJO TIMERS
+
+static void SetTimers (void){ 
+	id_tim_1s= osTimerNew((osTimerFunc_t)Timer_Callback_1s, osTimerPeriodic, NULL,NULL);
+  id_tim_6s= osTimerNew((osTimerFunc_t)Timer_Callback_6s, osTimerOnce, NULL,NULL);
+	id_tim_3m= osTimerNew((osTimerFunc_t)Timer_Callback_3m, osTimerPeriodic, NULL,NULL);
+	
+
+	
+}
+//manejo de lo quiero que haga durante el tiempo que dure el timer
+//en este caso cada vez que se actualice la hora, 
+//que obviamnete sera cada 1seg debe hacer el led rojo toggle durante 2 seg
+void Timer_Callback_1s (void){
+ 
+ if(timer_1seg<40){//4 segundos porque 40veces 100ms
+		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_14);//Led red
+	   timer_1seg++;
+ }else{
+   osTimerStop(id_tim_1s);
+	 timer_1seg=0;
+ }
+}
+
+void Timer_Callback_6s (void){
+	//parpadeo 100ms 5Hz
+	osTimerStart(id_tim_1s, 100);
+	Init_sntp(); //reinicio por primera vez del SNTP como dice el enunciado (re-configuracion)
+	
+	//3mins=3*60*1000=180.000ms
+	osTimerStart(id_tim_3m,180000); //18000ms
+}
+
+
+void Timer_Callback_3m (void){
+	timer_1seg = 0; // Reset contador por si acaso
+	osTimerStart(id_tim_1s, 100);
+	Init_sntp(); //re sincronizacion a los 3 minutos
+	
 }

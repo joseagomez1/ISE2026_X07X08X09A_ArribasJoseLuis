@@ -72,8 +72,7 @@ void RTC_Init(void){
   }
 
 //	RTC_hora(0x16	,0x04,0x14);
-//	RTC_fecha(0x01,0x01,0x01,0x01);
-//	
+//	RTC_fecha(0x01,0x01,0x01,0x01);	
 
 	if (HAL_RTCEx_BKUPRead(&RtcHandle, RTC_BKP_DR1) != 0x32F2)
   {
@@ -98,7 +97,7 @@ void RTC_hora(uint8_t hh, uint8_t mm, uint8_t ss){
 	RTC_Time.Hours= hh;
 	RTC_Time.Minutes=mm;
 	RTC_Time.Seconds=ss;
-	RTC_Time.TimeFormat= RTC_HOURFORMAT_24;
+	RTC_Time.TimeFormat= RTC_HOURFORMAT12_AM;
 	RTC_Time.DayLightSaving=RTC_DAYLIGHTSAVING_NONE;
 	RTC_Time.StoreOperation=RTC_STOREOPERATION_RESET;
 	
@@ -161,7 +160,7 @@ void Alarma (void){
 	alarma.AlarmTime.StoreOperation=RTC_STOREOPERATION_RESET;
 	alarma.AlarmMask= RTC_ALARMMASK_DATEWEEKDAY | RTC_ALARMMASK_HOURS | RTC_ALARMMASK_MINUTES; //en mascara pongo lo que no quiero tener en cuenta ('enmascarar')
 	alarma.AlarmDateWeekDaySel=RTC_ALARMDATEWEEKDAYSEL_DATE; 
-	alarma.AlarmDateWeekDay=0x1;  //monday
+	alarma.AlarmDateWeekDay=RTC_Date.WeekDay;  //monday
 	alarma.Alarm=RTC_ALARM_A;
 	
 	HAL_NVIC_EnableIRQ(RTC_Alarm_IRQn); //Habilita ambas alarmas
