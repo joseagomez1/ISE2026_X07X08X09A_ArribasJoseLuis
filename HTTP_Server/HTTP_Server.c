@@ -16,8 +16,12 @@
 #include "stm32f4xx_hal.h"              // Keil::Device:STM32Cube HAL:Common
 #include "Board_LED.h"                  // ::Board Support:LED
 #include "adc.h"                  // ::Board Support:A/D Converter
+#include "RTC.h"
+#include "stm32f4xx_it.h"
 
-#include "Board_Buttons.h"              // ::Board Support:Buttons
+
+
+//#include "Board_Buttons.h"              // ::Board Support:Buttons
 
 //#include "Board_ADC.h"                  // ::Board Support:A/D Converter
 //#include "Board_GLCD.h"                 // ::Board Support:Graphic LCD
@@ -34,7 +38,7 @@ const osThreadAttr_t app_main_attr = {
 //extern GLCD_FONT GLCD_Font_6x8;
 //extern GLCD_FONT GLCD_Font_16x24;
 
-extern uint16_t AD_in          (uint32_t ch);
+extern uint16_t AD_in          (uint32_t ch1);
 //extern uint8_t  get_button     (void);
 extern void     netDHCP_Notify (uint32_t if_num, uint8_t option, const uint8_t *val, uint32_t len);
 void adc_in (void *argument); 
@@ -49,14 +53,22 @@ bool LEDrun;
 char lcd_text[2][20+1] = { "LCD line 1",
                            "LCD line 2" };
 
-													 
+uint8_t cincoSeg = 0;		
+uint8_t aShowTime[16] = {0};
+uint8_t aShowDate[16] = {0}; 		
+
 /* Thread IDs */
 osThreadId_t TID_Display;
 osThreadId_t TID_Led;
-
+osThreadId_t TID_RTC;
+osThreadId_t TID_Alarma;
+													 
 /* Thread declarations */
 static void BlinkLed (void *arg);
 static void Display  (void *arg);
+static void ActualizacionHora (void *arg);
+static void AlarmaMinuto (void *arg);
+
 
 __NO_RETURN void app_main (void *arg);
 
@@ -98,60 +110,69 @@ void netDHCP_Notify (uint32_t if_num, uint8_t option, const uint8_t *val, uint32
   Thread 'Display': LCD display handler
  *---------------------------------------------------------------------------*/
 static __NO_RETURN void Display (void *arg) {
-//  static uint8_t ip_addr[NET_ADDR_IP6_LEN];
-//  static char    ip_ascii[40];
-//  static char    buf[24];
-//  uint32_t x = 0;
 
-//  (void)arg;
-
-//  GLCD_Initialize         ();
-//  GLCD_SetBackgroundColor (GLCD_COLOR_BLUE);
-//  GLCD_SetForegroundColor (GLCD_COLOR_WHITE);
-//  GLCD_ClearScreen        ();
-//  GLCD_SetFont            (&GLCD_Font_16x24);
-//  GLCD_DrawString         (x*16U, 1U*24U, "       MDK-MW       ");
-//  GLCD_DrawString         (x*16U, 2U*24U, "HTTP Server example ");
-
-//  GLCD_DrawString (x*16U, 4U*24U, "IP4:Waiting for DHCP");
-
-  /* Print Link-local IPv6 address */
-//  netIF_GetOption (NET_IF_CLASS_ETH,
-//                   netIF_OptionIP6_LinkLocalAddress, ip_addr, sizeof(ip_addr));
-
-//  netIP_ntoa(NET_ADDR_IP6, ip_addr, ip_ascii, sizeof(ip_ascii));
-
-//  sprintf (buf, "IP6:%.16s", ip_ascii);
-//  GLCD_DrawString ( x    *16U, 5U*24U, buf);
-//  sprintf (buf, "%s", ip_ascii+16);
-//  GLCD_DrawString ((x+10U)*16U, 6U*24U, buf);
   LCD_reset();
 	LCD_init();
 	clean_buffer();
 	
+	uint32_t flagLCD = 0x00;
   while(1) {
     /* Wait for signal from DHCP */
-    osThreadFlagsWait (0x01U, osFlagsWaitAny,osWaitForever );
-	  write_LCD(lcd_text[0],1,true);
+    flagLCD= osThreadFlagsWait (0x50, osFlagsWaitAll, osWaitForever); 
+	 if (flagLCD== 0x50){
+		write_LCD(lcd_text[0],1,true);
     write_LCD(lcd_text[1],2,false);
-		
-    /* Retrieve and print IPv4 address */
-//    netIF_GetOption (NET_IF_CLASS_ETH,
-//                     netIF_OptionIP4_Address, ip_addr, sizeof(ip_addr));
-
-//    netIP_ntoa (NET_ADDR_IP4, ip_addr, ip_ascii, sizeof(ip_ascii));
-
-////    sprintf (buf, "IP4:%-16s",ip_ascii);
-//    GLCD_DrawString (x*16U, 4U*24U, buf);
-
-    /* Display user text lines */
-//    sprintf (buf, "%-20s", lcd_text[0]);
-//    GLCD_DrawString (x*16U, 7U*24U, buf);
-//    sprintf (buf, "%-20s", lcd_text[1]);
-//    GLCD_DrawString (x*16U, 8U*24U, buf);
+	 }
+	 LCD_update();
   }
 }
 
+/*----------------------------------------------------------------------------
+  Thread 'RTC': RTC handler
+ *---------------------------------------------------------------------------*/
+static __NO_RETURN void ActualizacionHora (void *arg) {
+	
+	//osTimerStart(id_tim_6s, 6000);
+
+  while(1) {
+		RTC_Show(aShowTime, aShowDate);
+		
+		
+		memcpy(lcd_text[0], aShowTime, sizeof(aShowTime));
+    lcd_text[0][sizeof(aShowTime)] = '\0';
+    
+    memcpy(lcd_text[1], aShowDate, sizeof(aShowDate));
+    lcd_text[1][sizeof(aShowDate)] = '\0';
+    
+    
+    //Envía al hilo del LCD para escribir
+    osThreadFlagsSet (TID_Display, 0x50); 
+	
+		
+  }
+}
+/*----------------------------------------------------------------------------
+  Thread 'ALARMA': RTC handler
+ *---------------------------------------------------------------------------*/
+static __NO_RETURN void AlarmaMinuto (void *arg) {
+	
+	uint8_t FlagAlarma= 0x0U;
+//SI NO PONES LA INTERRUPCION DE RTC JAMAS SALTA EL LED
+  while(1) {
+		FlagAlarma= osThreadFlagsWait(0x01U, osFlagsWaitAll,osWaitForever);
+		
+		if(FlagAlarma== 0x01){
+//			RTC_hora(0x00,0x00,0x00);
+//			RTC_fecha(0x01,0x01,0x00,0x01);
+			for(int CincoSegundos=0; CincoSegundos<10; CincoSegundos++){
+			    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
+          osDelay(500);
+			}
+		
+		}
+		
+  }
+}
 /*----------------------------------------------------------------------------
   Thread 'BlinkLed': Blink the LEDs on an eval board
  *---------------------------------------------------------------------------*/
@@ -182,14 +203,20 @@ __NO_RETURN void app_main (void *arg) {
   (void)arg;
 
   LED_Initialize();
-  //Buttons_Initialize();
-  ADC1_pins_F429ZI_config ();
-
-
+	
   netInitialize ();
 
-  TID_Led     = osThreadNew (BlinkLed, NULL, NULL);
-  TID_Display = osThreadNew (Display,  NULL, NULL);
+  //Buttons_Initialize();
+  ADC1_pins_F429ZI_config ();
+	
+	//inicializacion RTC
+  RTC_Init();
+	
+	Alarma();
 
-  osThreadExit();
+  //TID_Led     = osThreadNew (BlinkLed, NULL, NULL);
+  TID_Display = osThreadNew (Display,  NULL, NULL);
+	TID_RTC			= osThreadNew (ActualizacionHora,  NULL, NULL);
+  TID_Alarma	 = osThreadNew (AlarmaMinuto,  NULL, NULL);
+	osThreadExit();
 }

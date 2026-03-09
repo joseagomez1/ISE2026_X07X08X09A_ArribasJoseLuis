@@ -1,5 +1,8 @@
 #include "stm32f4xx_hal.h"
 #include "math.h"
+#include "adc.h"
+
+
 #define RESOLUTION_12B 4096U
 #define VREF 3.3f
 

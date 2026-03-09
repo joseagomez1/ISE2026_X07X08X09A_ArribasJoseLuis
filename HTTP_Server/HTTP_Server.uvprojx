@@ -389,44 +389,14 @@
               <FilePath>.\main.c</FilePath>
             </File>
             <File>
-              <FileName>HTTP_Server.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\HTTP_Server.c</FilePath>
-            </File>
-            <File>
-              <FileName>HTTP_Server_CGI.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\HTTP_Server_CGI.c</FilePath>
-            </File>
-            <File>
               <FileName>Web.c</FileName>
               <FileType>1</FileType>
               <FilePath>Web\Web.c</FilePath>
             </File>
             <File>
-              <FileName>lcd.c</FileName>
+              <FileName>stm32f4xx_it.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\lcd.c</FilePath>
-            </File>
-            <File>
-              <FileName>lcd.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\lcd.h</FilePath>
-            </File>
-            <File>
-              <FileName>Arial12x12.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Arial12x12.h</FilePath>
-            </File>
-            <File>
-              <FileName>adc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\adc.c</FilePath>
-            </File>
-            <File>
-              <FileName>adc.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\adc.h</FilePath>
+              <FilePath>.\stm32f4xx_it.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -528,6 +498,16 @@
               <FileType>9</FileType>
               <FilePath>.\Web\pabb.gif</FilePath>
             </File>
+            <File>
+              <FileName>rtc.cgx</FileName>
+              <FileType>9</FileType>
+              <FilePath>.\Web\rtc.cgx</FilePath>
+            </File>
+            <File>
+              <FileName>rtc.cgi</FileName>
+              <FileType>9</FileType>
+              <FilePath>.\Web\rtc.cgi</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -537,6 +517,71 @@
               <FileName>Abstract.txt</FileName>
               <FileType>5</FileType>
               <FilePath>.\Abstract.txt</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>LCD</GroupName>
+          <Files>
+            <File>
+              <FileName>lcd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\lcd.c</FilePath>
+            </File>
+            <File>
+              <FileName>lcd.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\lcd.h</FilePath>
+            </File>
+            <File>
+              <FileName>Arial12x12.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Arial12x12.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>ADC</GroupName>
+          <Files>
+            <File>
+              <FileName>adc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\adc.c</FilePath>
+            </File>
+            <File>
+              <FileName>adc.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\adc.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Server</GroupName>
+          <Files>
+            <File>
+              <FileName>HTTP_Server.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\HTTP_Server.c</FilePath>
+            </File>
+            <File>
+              <FileName>HTTP_Server_CGI.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\HTTP_Server_CGI.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>RTC</GroupName>
+          <Files>
+            <File>
+              <FileName>RTC.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\RTC.c</FilePath>
+            </File>
+            <File>
+              <FileName>RTC.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\RTC.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -733,6 +778,12 @@
         </targetInfos>
       </component>
       <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="RCC" Cvendor="Keil" Cversion="1.7.9" condition="STM32F4 HAL GPIO">
+        <package name="STM32F4xx_DFP" schemaVersion="1.6.3" url="http://www.keil.com/pack/" vendor="Keil" version="2.15.0"/>
+        <targetInfos>
+          <targetInfo name="Debug"/>
+        </targetInfos>
+      </component>
+      <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="RTC" Cvendor="Keil" Cversion="1.7.9" condition="STM32F4 HAL">
         <package name="STM32F4xx_DFP" schemaVersion="1.6.3" url="http://www.keil.com/pack/" vendor="Keil" version="2.15.0"/>
         <targetInfos>
           <targetInfo name="Debug"/>

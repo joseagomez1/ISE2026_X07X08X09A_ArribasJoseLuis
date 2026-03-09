@@ -12,6 +12,10 @@
 #include "cmsis_os2.h"                  // ::CMSIS:RTOS2
 #include "rl_net.h"                     // Keil.MDK-Pro::Network:CORE
 #include "Board_LED.h"                  // ::Board Support:LED
+        
+#include "lcd.h"
+#include "adc.h"
+#include "stm32f4xx_it.h"
 
 #if      defined (__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
 #pragma  clang diagnostic push
@@ -25,6 +29,9 @@ extern uint16_t AD_in (uint32_t ch1);
 
 extern bool LEDrun;
 extern char lcd_text[2][20+1];
+
+extern RTC_TimeTypeDef RTC_Time;
+extern RTC_DateTypeDef RTC_Date;
 extern osThreadId_t TID_Display;
 
 // Local variables.
@@ -187,6 +194,8 @@ uint32_t netCGI_Script (const char *env, char *buf, uint32_t buflen, uint32_t *p
   static uint32_t adv;
   netIF_Option opt = netIF_OptionMAC_Address;
   int16_t      typ = 0;
+	char showtime[40];
+	char showdate[40];
 
   switch (env[0]) {
     // Analyze a 'c' script line starting position 2
@@ -373,7 +382,20 @@ uint32_t netCGI_Script (const char *env, char *buf, uint32_t buflen, uint32_t *p
    //   len = (uint32_t)sprintf (buf, "<checkbox><id>button%c</id><on>%s</on></checkbox>",
      //                          env[1], (get_button () & (1 << (env[1]-'0'))) ? "true" : "false");
       break;
-  }
+		case 'r':
+     //RTC
+      switch (env[2]) {
+        case '1':
+					//sprintf((char *)showtime, "%2d:%2d:%2d", RTC_Time.Hours, RTC_Time.Minutes, RTC_Time.Seconds);
+          len = (uint32_t)sprintf (buf, &env[4], lcd_text[0]);
+          break;
+        case '2':
+					// sprintf((char *)showdate, "%2d-%2d-%2d", RTC_Date.Month, RTC_Date.Date, 2000 + RTC_Date.Year);
+            len = (uint32_t)sprintf (buf, &env[4], lcd_text[1]);
+          break;
+      }
+      break;
+		}
   return (len);
 }
 
