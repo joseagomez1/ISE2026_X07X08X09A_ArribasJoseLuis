@@ -17,8 +17,8 @@
 #if !defined (SLEEP_MODE) && !defined (STOP_MODE) && !defined (STOP_UNDERDRIVE_MODE) && !defined (STANDBY_MODE)\
  && !defined (STANDBY_RTC_MODE) && !defined (STANDBY_RTC_BKPSRAM_MODE)
 /* Uncomment the corresponding line to select the STM32F4xx Low Power mode */
-#define SLEEP_MODE
- //#define STOP_MODE //*/
+//#define SLEEP_MODE
+ #define STOP_MODE 
  //#define STOP_UNDERDRIVE_MODE 
  //#define STANDBY_MODE 
 //#define STANDBY_RTC_MODE 
@@ -33,7 +33,7 @@
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
 void SleepMode_Measure(void);
-//void StopMode_Measure(void);
+void StopMode_Measure(void);
 //void StopUnderDriveMode_Measure(void);
 //void StandbyMode_Measure(void);
 //void StandbyRTCMode_Measure(void);

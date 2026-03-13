@@ -249,7 +249,7 @@ static __NO_RETURN void CambioModoPWR (void *arg) {
 		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_SET);   // LED rojo ON
     system_sleeping=1;
 	
-	  SleepMode_Measure();
+	  StopMode_Measure();
 	
 		system_sleeping = 0;
 		
