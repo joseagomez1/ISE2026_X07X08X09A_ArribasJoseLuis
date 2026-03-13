@@ -33,6 +33,8 @@ static void netSNTP_Callback(uint32_t seconds, uint32_t seconds_fraction){
     t_SNTP = *localtime(&seconds); //Segundos desde 1 enero de 1970. Se castea a la estructura de tipo tm y lo almacena en la estructura
     
     /* Configure Date */
+		
+		
     RTC_Date.Year = t_SNTP.tm_year - 100; ///PASAMOS A FROMATO RTC
     RTC_Date.Month = t_SNTP.tm_mon + 1; //FORMATO RTC
     RTC_Date.Date = t_SNTP.tm_mday;

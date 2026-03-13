@@ -18,6 +18,7 @@
 #include "adc.h"                  // ::Board Support:A/D Converter
 #include "RTC.h"
 #include "sntp.h"
+#include "PWR.h"
 #include "stm32f4xx_it.h"
 
 
@@ -54,6 +55,8 @@ bool LEDrun;
 char lcd_text[2][20+1] = { "LCD line 1",
                            "LCD line 2" };
 
+volatile uint8_t system_sleeping = 0;
+
 
 uint8_t aShowTime[16] = {0};
 uint8_t aShowDate[16] = {0}; 
@@ -64,6 +67,7 @@ osThreadId_t TID_Led;
 osThreadId_t TID_RTC;
 osThreadId_t TID_Alarma;
 osThreadId_t TID_Pulsador;
+osThreadId_t TID_CambioModoPWR;
 										
 
 //TIMER
@@ -78,6 +82,8 @@ static void Display  (void *arg);
 static void ActualizacionHora (void *arg);
 static void AlarmaMinuto (void *arg);
 static void Pulsador(void *arg);
+static void CambioModoPWR(void *arg);
+
 
 
 //CALLBACKS TIMERS
@@ -85,6 +91,8 @@ static void SetTimers (void);
 void Timer_Callback_1s (void);
 void Timer_Callback_6s (void);
 void Timer_Callback_3m (void);
+
+
 
 
 __NO_RETURN void app_main (void *arg);
@@ -195,22 +203,16 @@ static __NO_RETURN void AlarmaMinuto (void *arg) {
   Thread 'BlinkLed': Blink the LEDs on an eval board
  *---------------------------------------------------------------------------*/
 static __NO_RETURN void BlinkLed (void *arg) {
-  const uint8_t led_val[16] = { 0x48,0x88,0x84,0x44,0x42,0x22,0x21,0x11,
-                                0x12,0x0A,0x0C,0x14,0x18,0x28,0x30,0x50 };
-  uint32_t cnt = 0U;
-
   (void)arg;
 
-  LEDrun = true;
-  while(1) {
-    /* Every 100 ms */
-    if (LEDrun == true) {
-      LED_SetOut (led_val[cnt]);
-      if (++cnt >= sizeof(led_val)) {
-        cnt = 0U;
-      }
+  while (1) {
+  if (!system_sleeping) {
+      HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);   // verde
+      osDelay(100);
+    } else {
+      HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
+      osDelay(10);
     }
-    osDelay (100);
   }
 }
 
@@ -228,12 +230,35 @@ static __NO_RETURN void Pulsador (void *arg) {
 		if(flagPulsador==0x01){
 		  RTC_hora(0,0,0);
 			RTC_fecha(1,1,0,0);
-			for(int i = 0; i < 10; i++){
-        HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_7);//Led azul, no lo piden
-        osDelay(100);
-      }
+//			for(int i = 0; i < 10; i++){
+//        HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_7);//Led azul, no lo piden
+//        osDelay(100);
+//      }
 		}
   }
+}
+
+/*----------------------------------------------------------------------------
+  Thread 'CambioModoPWR': Funcionalidad modos PWR
+ *---------------------------------------------------------------------------*/
+static __NO_RETURN void CambioModoPWR (void *arg) {
+	(void)arg;
+	
+	  osDelay(15000);
+	
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_SET);   // LED rojo ON
+    system_sleeping=1;
+	
+	  SleepMode_Measure();
+	
+		system_sleeping = 0;
+		
+	  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_RESET);
+ 
+	while (1) {
+		
+    }
+	
 }
 
 /*----------------------------------------------------------------------------
@@ -260,11 +285,12 @@ __NO_RETURN void app_main (void *arg) {
 	//boton
 	init_Boton();
 
-  //TID_Led     = osThreadNew (BlinkLed, NULL, NULL);
+  TID_Led     = osThreadNew (BlinkLed, NULL, NULL);
   TID_Display = osThreadNew (Display,  NULL, NULL);
 	TID_RTC			= osThreadNew (ActualizacionHora,  NULL, NULL);
   TID_Alarma	 = osThreadNew (AlarmaMinuto,  NULL, NULL);
 	TID_Pulsador = osThreadNew (Pulsador,  NULL, NULL);
+	TID_CambioModoPWR= osThreadNew (CambioModoPWR,  NULL, NULL);
 	osThreadExit();
 }
 
@@ -279,6 +305,7 @@ static void SetTimers (void){
 
 	
 }
+
 //manejo de lo quiero que haga durante el tiempo que dure el timer
 //en este caso cada vez que se actualice la hora, 
 //que obviamnete sera cada 1seg debe hacer el led rojo toggle durante 2 seg
